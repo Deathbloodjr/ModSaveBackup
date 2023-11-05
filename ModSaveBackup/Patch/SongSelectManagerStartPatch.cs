@@ -27,12 +27,14 @@ namespace ModSaveBackup.Patch
                 try
                 {
                     var folders = Plugin.Instance.ConfigFoldersToBackup.Value;
-                    var splitFolders = folders.Split('|');
-                    for (int i = 0; i < splitFolders.Length; i++)
+                    if (folders.Length != 0)
                     {
-                        FileBackup.BackupFolder(splitFolders[i], time);
+                        var splitFolders = folders.Split('|');
+                        for (int i = 0; i < splitFolders.Length; i++)
+                        {
+                            FileBackup.BackupFolder(splitFolders[i], time);
+                        }
                     }
-
                     var plugins = Chainloader.PluginInfos.Values.Select(x => x.Instance).ToArray();
                     BaseUnityPlugin takotakoPlugin = null;
                     BaseUnityPlugin sanaesavePlugin = null;

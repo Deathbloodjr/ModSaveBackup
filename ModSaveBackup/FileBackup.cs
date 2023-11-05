@@ -14,35 +14,41 @@ namespace ModSaveBackup
         {
             //The plan was to take the contents of the file, zip it up, and place it within that folder
             // Or maybe place it in a backup folder within that folder?
-
-            DirectoryInfo dirInfo = new DirectoryInfo(folderPath);
-            if (dirInfo.Exists)
+            try
             {
-                var files = dirInfo.GetFiles("*.*");
-                var subDirs = dirInfo.GetDirectories("*");
-                string backupDirectory = Path.Combine(folderPath, "Backup", time);
-                if (!Directory.Exists(backupDirectory))
+                DirectoryInfo dirInfo = new DirectoryInfo(folderPath);
+                if (dirInfo.Exists)
                 {
-                    Directory.CreateDirectory(backupDirectory);
-                }
-               
-                for (int i = 0; i < files.Length; i++)
-                {
-                    if (!files[i].FullName.Contains(Path.Combine(folderPath, "Backup")))
+                    var files = dirInfo.GetFiles("*.*");
+                    var subDirs = dirInfo.GetDirectories("*");
+                    string backupDirectory = Path.Combine(folderPath, "Backup", time);
+                    if (!Directory.Exists(backupDirectory))
                     {
-                        var relativePath = files[i].FullName.Remove(0, dirInfo.FullName.Length + 1);
-                        File.Copy(files[i].FullName, Path.Combine(backupDirectory, relativePath));
+                        Directory.CreateDirectory(backupDirectory);
                     }
-                }
 
-                for (int i = 0; i < subDirs.Length; i++)
-                {
-                    if (subDirs[i].Name != "Backup")
+                    for (int i = 0; i < files.Length; i++)
                     {
-                        var relativePath = subDirs[i].FullName.Remove(0, dirInfo.FullName.Length + 1);
-                        CopyDirectory(subDirs[i].FullName, Path.Combine(backupDirectory, relativePath), true);
+                        if (!files[i].FullName.Contains(Path.Combine(folderPath, "Backup")))
+                        {
+                            var relativePath = files[i].FullName.Remove(0, dirInfo.FullName.Length + 1);
+                            File.Copy(files[i].FullName, Path.Combine(backupDirectory, relativePath));
+                        }
+                    }
+
+                    for (int i = 0; i < subDirs.Length; i++)
+                    {
+                        if (subDirs[i].Name != "Backup")
+                        {
+                            var relativePath = subDirs[i].FullName.Remove(0, dirInfo.FullName.Length + 1);
+                            CopyDirectory(subDirs[i].FullName, Path.Combine(backupDirectory, relativePath), true);
+                        }
                     }
                 }
+            }
+            catch (Exception e)
+            {
+                Plugin.LogError(e.Message);
             }
 
         }
